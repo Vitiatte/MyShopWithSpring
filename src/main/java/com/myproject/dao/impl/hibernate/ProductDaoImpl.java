@@ -20,6 +20,7 @@ import java.util.Optional;
 public class ProductDaoImpl implements ProductDao {
 
     private static final Logger logger = Logger.getLogger(ProductDaoImpl.class);
+
     @Autowired
     private SessionFactory sessionFactory;
 
@@ -28,6 +29,7 @@ public class ProductDaoImpl implements ProductDao {
     public void add(Product product) {
         Session session = sessionFactory.openSession();
         Transaction transaction;
+
         try {
             transaction = session.beginTransaction();
             session.save(product);
@@ -67,7 +69,7 @@ public class ProductDaoImpl implements ProductDao {
 
         try {
             transaction = session.beginTransaction();
-            productList = session.createQuery("FROM Product ").list();
+            productList = session.createQuery("FROM Product").list();
             transaction.commit();
         } catch (HibernateException e) {
             logger.error("Exception when products were being gotten", e);

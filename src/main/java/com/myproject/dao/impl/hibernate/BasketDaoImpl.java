@@ -45,7 +45,7 @@ public class BasketDaoImpl implements BasketDao {
 
         try {
             transaction = session.beginTransaction();
-            basket = (Basket) session.createQuery("FROM Basket WHERE userId=:userId")
+            basket = (Basket) session.createQuery("FROM Basket WHERE userId = :userId")
                     .setParameter("userId", userId)
                     .uniqueResult();
             transaction.commit();

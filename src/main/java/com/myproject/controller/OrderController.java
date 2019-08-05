@@ -55,7 +55,6 @@ public class OrderController {
                               @SessionAttribute("user") User user,
                               @ModelAttribute("order") Order order,
                               Model model) {
-
         if (!email.isEmpty() && !address.isEmpty()) {
             Long userId = user.getId();
             order = Order.getBuilder()

@@ -20,6 +20,7 @@ import java.util.Optional;
 public class UserDaoImpl implements UserDao {
 
     private static final Logger logger = Logger.getLogger(UserDaoImpl.class);
+
     @Autowired
     private SessionFactory sessionFactory;
 
@@ -70,8 +71,8 @@ public class UserDaoImpl implements UserDao {
 
         try {
             transaction = session.beginTransaction();
-            user = (User) session.createQuery("FROM User WHERE login=:login AND " +
-                    "password=:password")
+            user = (User) session.createQuery("FROM User WHERE login = :login AND " +
+                    "password = :password")
                     .setParameter("login", login)
                     .setParameter("password", pass)
                     .uniqueResult();
@@ -93,7 +94,7 @@ public class UserDaoImpl implements UserDao {
 
         try {
             transaction = session.beginTransaction();
-            user = (User) session.createQuery("FROM User WHERE login=:login")
+            user = (User) session.createQuery("FROM User WHERE login = :login")
                     .setParameter("login", login)
                     .uniqueResult();
             transaction.commit();

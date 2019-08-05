@@ -45,7 +45,6 @@ public class UserController {
                         @ModelAttribute("user") User user,
                         @ModelAttribute Basket basket,
                         Model model) {
-
         Optional<User> optionalUser = userService.getUserByLogin(login);
         User loggedUser;
 
@@ -113,7 +112,6 @@ public class UserController {
                              @RequestParam("password") String password,
                              @RequestParam("role") String role,
                              Model model) {
-
         String salt = userService.getUserById(id).get().getSalt();
 
         User user = User.getBuilder()
@@ -139,7 +137,6 @@ public class UserController {
                                   @RequestParam("passwordRepeat") String passwordRepeat,
                                   @RequestParam("role") String role,
                                   Model model) {
-
         User.Builder builder = User.getBuilder();
         boolean isAllDataCorrect = true;
 
@@ -172,7 +169,6 @@ public class UserController {
 
         if (isAllDataCorrect) {
             userService.add(builder.build());
-
             model.addAttribute("usersList", userService.getAllUsers());
             return "/admin/users";
         } else {

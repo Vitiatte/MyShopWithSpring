@@ -30,7 +30,6 @@ public class BasketController {
         Product product = productService.getProductById(productId).get();
         basket.getProductList().add(product);
         basketService.update(basket);
-
         return "redirect:/user/products";
     }
 

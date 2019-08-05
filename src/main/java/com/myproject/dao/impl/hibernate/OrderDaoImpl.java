@@ -17,6 +17,7 @@ import java.util.Optional;
 public class OrderDaoImpl implements OrderDao {
 
     private static final Logger logger = Logger.getLogger(OrderDaoImpl.class);
+
     @Autowired
     private SessionFactory sessionFactory;
 

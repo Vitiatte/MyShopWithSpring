@@ -39,7 +39,6 @@ public class ProductController {
                              @RequestParam(value = "description", required = false) String description,
                              @RequestParam(value = "price", required = false) Double price,
                              Model model) {
-
         if (title == null || description == null || price == null || title.isEmpty()
                 || description.isEmpty() || price < 0.0) {
             model.addAttribute("error", "Input data is incorrect. Please try again!");
@@ -81,7 +80,6 @@ public class ProductController {
                                 @RequestParam(value = "description") String description,
                                 @RequestParam(value = "price") Double price,
                                 Model model) {
-
         Product product = Product.getBuilder()
                 .setId(id)
                 .setTitle(title)
