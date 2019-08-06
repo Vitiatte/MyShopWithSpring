@@ -12,12 +12,18 @@ import com.myproject.util.CheckCodeGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.bind.annotation.SessionAttributes;
 
 import java.util.List;
 
 @Controller
 @SessionAttributes({"order"})
+@RequestMapping("/user")
 public class OrderController {
 
     @Autowired
@@ -29,12 +35,13 @@ public class OrderController {
     @Autowired
     private MailService mailService;
 
+    //to use in session
     @ModelAttribute("order")
-    public Order setupUser() {
+    public Order createOrder() {
         return new Order();
     }
 
-    @RequestMapping(value = "/user/create_order", method = RequestMethod.GET)
+    @RequestMapping(value = "/create_order", method = RequestMethod.GET)
     public String createOrder(@SessionAttribute("user") User user,
                               Model model) {
         Long userId = user.getId();
@@ -48,7 +55,7 @@ public class OrderController {
         }
     }
 
-    @RequestMapping(value = "/user/create_order", method = RequestMethod.POST)
+    @RequestMapping(value = "/create_order", method = RequestMethod.POST)
     public String createOrder(@RequestParam("email") String email,
                               @RequestParam("address") String address,
                               @SessionAttribute("basket") Basket basket,
@@ -76,7 +83,7 @@ public class OrderController {
         }
     }
 
-    @RequestMapping(value = "/user/accept_order", method = RequestMethod.GET)
+    @RequestMapping(value = "/accept_order", method = RequestMethod.GET)
     public String acceptOrder(@SessionAttribute("order") Order order,
                               Model model) {
         mailService.sendCheckCode(order);
@@ -84,7 +91,7 @@ public class OrderController {
         return "/user/acceptOrder";
     }
 
-    @RequestMapping(value = "/user/accept_order", method = RequestMethod.POST)
+    @RequestMapping(value = "/accept_order", method = RequestMethod.POST)
     public String acceptOrder(@SessionAttribute("order") Order order,
                               @RequestParam("codeFromUser") String code,
                               Model model) {

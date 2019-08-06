@@ -9,7 +9,11 @@ import com.myproject.util.PasswordUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttributes;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -24,13 +28,15 @@ public class UserController {
     @Autowired
     private BasketService basketService;
 
+    //to use in session
     @ModelAttribute("user")
-    public User setupUser() {
+    public User createUser() {
         return new User();
     }
 
+    //to use in session
     @ModelAttribute("basket")
-    public Basket setupProduct() {
+    public Basket createProduct() {
         return new Basket();
     }
 

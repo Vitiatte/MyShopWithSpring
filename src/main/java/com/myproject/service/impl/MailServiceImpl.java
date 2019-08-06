@@ -5,7 +5,12 @@ import com.myproject.service.MailService;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
-import javax.mail.*;
+import javax.mail.Authenticator;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.util.Properties;
@@ -20,13 +25,13 @@ public class MailServiceImpl implements MailService {
         final String username = "tt5881862@gmail.com";
         final String password = "RCZ7TzCySXVBj7P";
 
-        Properties prop = new Properties();
-        prop.put("mail.smtp.host", "smtp.gmail.com");
-        prop.put("mail.smtp.port", "587");
-        prop.put("mail.smtp.auth", "true");
-        prop.put("mail.smtp.starttls.enable", "true");
+        Properties properties = new Properties();
+        properties.put("mail.smtp.host", "smtp.gmail.com");
+        properties.put("mail.smtp.port", "587");
+        properties.put("mail.smtp.auth", "true");
+        properties.put("mail.smtp.starttls.enable", "true");
 
-        Session session = Session.getInstance(prop,
+        Session session = Session.getInstance(properties,
                 new Authenticator() {
                     protected PasswordAuthentication getPasswordAuthentication() {
                         return new PasswordAuthentication(username, password);
@@ -45,7 +50,7 @@ public class MailServiceImpl implements MailService {
             Transport.send(message);
 
         } catch (MessagingException e) {
-            logger.warn("Exception when mail was being sent", e);
+            logger.error("Exception when mail was being sent", e);
         }
     }
 }

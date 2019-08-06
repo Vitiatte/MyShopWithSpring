@@ -24,11 +24,11 @@ public class PasswordUtil {
 
     public static String encryptPassWithSalt(String pass, String salt) {
         try {
-            SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512");
+            SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512");
             PBEKeySpec spec = new PBEKeySpec(pass.toCharArray(), stringToByte(salt),
                     NUMBER_OF_ITERATION,
                     KEY_LENGTH);
-            SecretKey key = skf.generateSecret(spec);
+            SecretKey key = secretKeyFactory.generateSecret(spec);
             byte[] res = key.getEncoded();
             return byteToString(res);
 
@@ -38,7 +38,7 @@ public class PasswordUtil {
     }
 
     private static String byteToString(byte[] input) {
-        return org.apache.commons.codec.binary.Base64.encodeBase64String(input);
+        return Base64.encodeBase64String(input);
     }
 
     private static byte[] stringToByte(String input) {

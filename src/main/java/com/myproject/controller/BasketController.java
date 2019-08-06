@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.SessionAttribute;
 import java.util.List;
 
 @Controller
+@RequestMapping("/user")
 public class BasketController {
 
     @Autowired
@@ -24,7 +25,7 @@ public class BasketController {
     @Autowired
     private ProductService productService;
 
-    @RequestMapping(value = "/user/add_product_to_basket", method = RequestMethod.GET)
+    @RequestMapping(value = "/add_product_to_basket", method = RequestMethod.GET)
     public String addProductToBasket(@SessionAttribute("basket") Basket basket,
                                      @RequestParam("product_id") long productId) {
         Product product = productService.getProductById(productId).get();
@@ -33,7 +34,7 @@ public class BasketController {
         return "redirect:/user/products";
     }
 
-    @RequestMapping("/user/basket")
+    @RequestMapping(value = "/basket", method = RequestMethod.GET)
     public String basketForUser(@SessionAttribute("user") User user,
                                 Model model) {
         Long userId = user.getId();
