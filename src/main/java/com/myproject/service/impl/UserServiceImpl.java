@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void add(User user) {
         long userId = userDao.add(user).get();
-        if (user.getUserRole().equals(UserRole.USER)) {
+        if (user.getUserRole().equals("USER_ROLE")) {
             Basket basket = new Basket();
             basket.setUserId(userId);
             basketDao.add(basket);
