@@ -1,6 +1,8 @@
 package com.myproject.entity;
 
 import com.myproject.entity.enums.UserRole;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,10 +12,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Arrays;
+import java.util.Collection;
 
 @Entity
 @Table(name = "user")
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,12 +30,8 @@ public class User {
     @Column(name = "password")
     private String hashedPassword;
 
-    @Column(name = "salt")
-    private String salt;
-
-    @Enumerated(EnumType.STRING)
     @Column(name = "role")
-    private UserRole userRole;
+    private String userRole;
 
     public User() {
     }
@@ -64,20 +64,47 @@ public class User {
         this.hashedPassword = hashedPassword;
     }
 
-    public UserRole getUserRole() {
+    public String getUserRole() {
         return userRole;
     }
 
-    public void setUserRole(UserRole userRole) {
+    public void setUserRole(String userRole) {
         this.userRole = userRole;
     }
 
-    public String getSalt() {
-        return salt;
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Arrays.asList((GrantedAuthority) () -> User.this.getUserRole().toString());
     }
 
-    public void setSalt(String salt) {
-        this.salt = salt;
+    @Override
+    public String getPassword() {
+        return this.getHashedPassword();
+    }
+
+    @Override
+    public String getUsername() {
+        return this.getLogin();
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 
     public class Builder {
@@ -100,13 +127,8 @@ public class User {
             return Builder.this;
         }
 
-        public Builder setUserRole(UserRole role) {
+        public Builder setUserRole(String role) {
             User.this.userRole = role;
-            return Builder.this;
-        }
-
-        public Builder setSalt(String salt) {
-            User.this.salt = salt;
             return Builder.this;
         }
 

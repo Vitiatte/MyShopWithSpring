@@ -5,16 +5,19 @@ import com.myproject.entity.User;
 import com.myproject.entity.enums.UserRole;
 import com.myproject.service.BasketService;
 import com.myproject.service.UserService;
-import com.myproject.util.PasswordUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -42,45 +45,12 @@ public class UserController {
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String login() {
-        return "/index";
-    }
-
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public String login(@RequestParam("login") String login,
-                        @RequestParam("password") String pass,
-                        @ModelAttribute("user") User user,
-                        @ModelAttribute Basket basket,
-                        Model model) {
-        Optional<User> optionalUser = userService.getUserByLogin(login);
-        User loggedUser;
-
-        if (optionalUser.isPresent()) {
-            loggedUser = optionalUser.get();
-            if (loggedUser.getHashedPassword().equals(
-                    PasswordUtil.encryptPassWithSalt(pass, loggedUser.getSalt()))) {
-                basket = basketService.getBasketForUser(loggedUser.getId()).get();
-                user = loggedUser;
-
-                model.addAttribute("user", user);
-                model.addAttribute("basket", basket);
-                if (loggedUser.getUserRole().equals(UserRole.ADMIN)) {
-                    return "redirect:/admin/users";
-                } else {
-                    return "redirect:/user/products";
-                }
-            } else {
-                model.addAttribute("error", "Login or password is wrong");
-                return "/index";
-            }
-        } else {
-            model.addAttribute("error", "Login or password is wrong");
-            return "";
-        }
+        return "login";
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
     public String logout() {
-        return "/index";
+        return "login";
     }
 
     @RequestMapping(value = "/admin/users", method = RequestMethod.GET)
@@ -118,14 +88,12 @@ public class UserController {
                              @RequestParam("password") String password,
                              @RequestParam("role") String role,
                              Model model) {
-        String salt = userService.getUserById(id).get().getSalt();
 
         User user = User.getBuilder()
                 .setId(id)
                 .setLogin(login)
-                .setHashedPassword(PasswordUtil.encryptPassWithSalt(password, salt))
-                .setUserRole(UserRole.valueOf(role))
-                .setSalt(salt)
+                .setHashedPassword(new BCryptPasswordEncoder().encode(password))
+                .setUserRole(role)
                 .build();
         userService.update(user);
         return "redirect:/admin/users";
@@ -159,28 +127,46 @@ public class UserController {
         if (Objects.nonNull(password)
                 && !password.isEmpty()
                 && password.equals(passwordRepeat)) {
-            String salt = PasswordUtil.generateSalt();
-            builder.setSalt(salt);
-            builder.setHashedPassword(PasswordUtil.encryptPassWithSalt(password, salt));
             model.addAttribute("password", password);
         } else {
             isAllDataCorrect = false;
         }
         //Check role
         if (Objects.nonNull(role)) {
-            builder.setUserRole(UserRole.valueOf(role));
+            builder.setUserRole(role);
         } else {
             isAllDataCorrect = false;
         }
 
         if (isAllDataCorrect) {
-            userService.add(builder.build());
+            userService.add(builder.build(), password);
             model.addAttribute("usersList", userService.getAllUsers());
             return "/admin/users";
         } else {
             model.addAttribute("roles", UserRole.values());
             model.addAttribute("error", "Input data is incorrect. Please try again!");
             return "/admin/registration";
+        }
+    }
+
+    @GetMapping("/start_page")
+    public String getStartPage(@AuthenticationPrincipal User user,
+                               @ModelAttribute Basket basket,
+                               Model model) {
+        if (user.getUserRole().equals("ROLE_ADMIN")) {
+            return "redirect:/admin/users";
+        } else {
+            Optional<Basket> optionalBasketService =
+                    basketService.getBasketForUser(user.getId());
+            if (optionalBasketService.isPresent()) {
+                model.addAttribute("basket", basket);
+            } else {
+                basket.setUserId(user.getId());
+                basket.setProductList(new ArrayList<>());
+                basketService.add(basket);
+                model.addAttribute("basket", basket);
+            }
+            return "redirect:/user/products";
         }
     }
 }
