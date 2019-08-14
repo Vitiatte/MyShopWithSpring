@@ -127,7 +127,6 @@ public class UserController {
         if (Objects.nonNull(password)
                 && !password.isEmpty()
                 && password.equals(passwordRepeat)) {
-            builder.setHashedPassword(new BCryptPasswordEncoder().encode(password));
             model.addAttribute("password", password);
         } else {
             isAllDataCorrect = false;
@@ -140,7 +139,7 @@ public class UserController {
         }
 
         if (isAllDataCorrect) {
-            userService.add(builder.build());
+            userService.add(builder.build(), password);
             model.addAttribute("usersList", userService.getAllUsers());
             return "/admin/users";
         } else {

@@ -7,6 +7,7 @@ import com.myproject.entity.User;
 import com.myproject.entity.enums.UserRole;
 import com.myproject.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -22,9 +23,13 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private BasketDao basketDao;
 
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+
     @Transactional
     @Override
-    public void add(User user) {
+    public void add(User user, String nonHashedPass) {
+        user.setHashedPassword(passwordEncoder.encode(nonHashedPass));
         long userId = userDao.add(user).get();
         if (user.getUserRole().equals("USER_ROLE")) {
             Basket basket = new Basket();
